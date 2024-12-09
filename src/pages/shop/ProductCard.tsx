@@ -1,24 +1,27 @@
 import { FiPlus } from "react-icons/fi";
 import Rating from "../../components/Rating";
 import { getImgUrl } from "../../utils/GetImagaeURL";
-interface Product {
-  id: number;
-  name: string;
-  imageUrl: string;
-  category: string;
-  price: number;
-  rating: number;
-}
+import { useContext } from "react";
+import { CartContext } from "../../context/CartContext";
+import { Product } from "../../types"; 
 
 interface Props {
   product: Product;
 }
 
 const ProductCard = ({ product }: Props) => {
+  const cartContext = useContext(CartContext);
+
+  if (!cartContext) {
+    throw new Error("CartContext must be used within a CartProvider");
+  }
+
+  const { addToCart } = cartContext;
+
   return (
     <div>
       <div className="bg-[#FAFAFA]">
-        <img src={getImgUrl(`${product.imageUrl}`)} alt={product.name} />
+        <img src={getImgUrl(product.imageUrl)} alt={product.name} />
       </div>
       <div className="p-6 bg-white dark:bg-black shadow-sm">
         <h4 className="text-base mb-1">{product.category}</h4>
@@ -29,7 +32,12 @@ const ProductCard = ({ product }: Props) => {
             <sup>$</sup>
             <span>{product.price}</span>
           </p>
-          <button className="bg-secondary text-white p-2 rounded-full hover:bg-black/60"><FiPlus/></button>
+          <button
+            onClick={() => addToCart(product)}
+            className="bg-secondary text-white p-2 rounded-full hover:bg-black/60"
+          >
+            <FiPlus />
+          </button>
         </div>
       </div>
     </div>
@@ -37,3 +45,4 @@ const ProductCard = ({ product }: Props) => {
 };
 
 export default ProductCard;
+
